@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+//单元测试put和get
+
 func TestBTree_Put(t *testing.T) {
 	bt := NewBTree()
 
@@ -34,4 +36,5 @@ func TestBTree_Get(t *testing.T) {
 
 	pos2 := bt.Get([]byte("a"))
 	t.Log(pos2)
+
 }
