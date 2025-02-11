@@ -7,6 +7,7 @@ import (
 
 // DB 存储引擎实例
 type DB struct {
+	options    Options
 	mu         sync.RWMutex
 	activeFile *data.DataFile            //当前活跃数据文件，可用于写入
 	olderFiles map[uint32]*data.DataFile //旧的数据文件，只能用于读
@@ -32,14 +33,43 @@ func (db *DB) appendLogRecord(logRecord *data.LogRecord) (*data.LogRecordPos, er
 	//判断当前活跃数据文件是否存在，db在没有写入的时候是没有文件生成的
 	//如果为空则初始化数据文件
 	if db.activeFile != nil {
-
+		if err := db.setActiveFile(); err != nil {
+			return nil, err
+		}
 	}
+	//写入数据编码
+	encRecord, size := data.EncodeLogRecord(logRecord)
+	//如果写入的数据已经达到了活跃文件的阈值，则关闭活跃文件，并打开新的文件
+	if db.activeFile.WriteOff+size > db.options.DataFileSize {
+		//先持久化数据文件夹，保证已有的数据持久化
+		if err := db.activeFile.Sync(); err != nil {
+			return nil, err
+		}
+		//当前活跃文件在转会旧的数据文件
+		db.olderFiles[db.activeFile.FileId] = db.activeFile
+
+		//打开新的数据文件夹
+		if err := db.setActiveFile(); err != nil {
+			return nil, err
+		}
+	}
+
+	writeOff :=
 }
 
 // 设置当前活跃文件
+// setActiveFile 在访问此方法前把必须加锁
 func (db *DB) setActiveFile() error {
 	var initialFileId uint32 = 0
 	if db.activeFile != nil {
-
+		initialFileId = db.activeFile.FileId + 1
 	}
+	//	打开新的数据文件
+
+	dataFile, err := data.OpenDataFile(db.options.DirPath, initialFileId)
+	if err != nil {
+		return err
+	}
+	db.activeFile = dataFile
+	return nil
 }

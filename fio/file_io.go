@@ -20,22 +20,22 @@ func NewFileIOManager(fileName string) (*FileIO, error) {
 	return &FileIO{fd: fd}, nil
 }
 
-// 从文件的给定位置读取对应的数据
-func (fio *FileIO) Read([]byte, int64) (int, error) {
-
-}
-
-// 写入字节数组到文件中
-func (fio *FileIO) Write([]byte) (int, error) {
-
-}
-
-// 持久化数据
-func (fio *FileIO) Sync() error {
-
-}
-
-// 关闭文件
-func (fio *FileIO) Close() error {
-
-}
+//// 从文件的给定位置读取对应的数据
+//func (fio *FileIO) Read([]byte, int64) (int, error) {
+//
+//}
+//
+//// 写入字节数组到文件中
+//func (fio *FileIO) Write([]byte) (int, error) {
+//
+//}
+//
+//// 持久化数据
+//func (fio *FileIO) Sync() error {
+//
+//}
+//
+//// 关闭文件
+//func (fio *FileIO) Close() error {
+//
+//}
